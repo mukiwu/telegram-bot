@@ -16,8 +16,8 @@
             <small class="form-text text-muted">請輸入要推播的內容</small>
           </div>
           <div class="form-group">
-            <label for="imageFile">圖片上傳</label>
-            <input type="file" class="form-control-file" id="imageFile" name="imageFile">
+            <label for="photo">圖片上傳</label>
+            <input type="file" class="form-control-file" id="photo" name="photo">
             <small class="form-text text-muted">支援格式 jpg, png，圖片大小 2048 x 2048px 以內</small>
           </div>
           <button type="submit" class="btn btn-lg btn-primary btn-block">送出</button>
@@ -35,6 +35,7 @@
           type: 'POST',
           data: {
             text: $("#text").val(),
+            photo: $("#photo").val()
           },
           success: function(res) {
             alert('上傳成功');

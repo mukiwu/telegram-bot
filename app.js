@@ -1,26 +1,46 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+require('dotenv').config();
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+// const FormData = require('form-data');
+// const multer = require("multer");
+// const fs = require('fs'); 
+const indexRouter = require('./routes/index');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
+// Telegram BOT
+const TOKEN = process.env.TOKEN;
+const CHAT_ID = process.env.CHAT_ID;
+app.post('/send', async function(req, res){
+  const url = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+  const headers ={
+    "Content-Type": "application/json",
+    "cache-control": "no-cache"
+  }
+  const data = {
+    chat_id: CHAT_ID,
+    text: req.body.text
+  }
+  axios.post(url, data, {headers})
+    .then(response=>{console.log(response.status)})
+    .catch(error=>{console.log(error)}
+  );
+  res.send();
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

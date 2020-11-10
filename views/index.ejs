@@ -9,12 +9,16 @@
   <body>
     <div class="wrapper">
       <div class="align-item">
-        <form id="uploadForm" method="post">
+        <form id="sendMessage" method="post">
           <div class="form-group">
             <label for="text">訊息 (必填)</label>
             <textarea class="form-control" id="text" name="text" rows="3" required></textarea>
             <small class="form-text text-muted">請輸入要推播的內容</small>
           </div>
+          <button type="submit" class="btn btn-lg btn-primary btn-block">送出</button>
+        </form>
+
+        <form id="sendPhoto" method="post" enctype="multipart/form-data">
           <div class="form-group">
             <label for="photo">圖片上傳</label>
             <input type="file" class="form-control-file" id="photo" name="photo">
@@ -22,24 +26,44 @@
           </div>
           <button type="submit" class="btn btn-lg btn-primary btn-block">送出</button>
         </form>
+
       </div>
     </div>
   </body>
   <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
   <script>
     $(document).ready(function () {
-      $("#uploadForm").submit(function (e) {
+      $("#sendMessage").submit(function (e) {
         e.preventDefault();
         $.ajax({
-          url: '/send',
+          url: '/sendMessage',
           type: 'POST',
           data: {
-            text: $("#text").val(),
-            photo: $("#photo").val()
+            text: $("#text").val()
           },
           success: function(res) {
-            alert('上傳成功');
+            alert('推播文字成功');
             $("#text").val("");
+          },
+          error: function(err) {
+            console.log(err)
+          }
+        })
+      });
+
+      $("#sendPhoto").submit(function (e) {
+        e.preventDefault();
+        let data = new FormData($('#sendPhoto')[0]);
+        $.ajax({
+          url: '/sendPhoto',
+          type: 'POST',
+          contentType: false,
+          processData: false,
+          cache: false,
+          data: data,
+          success: function(res) {
+            alert('推播照片成功');
+            $("input").val("");
           },
           error: function(err) {
             console.log(err)

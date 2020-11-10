@@ -4,9 +4,9 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-// const FormData = require('form-data');
-// const multer = require("multer");
-// const fs = require('fs'); 
+const FormData = require('form-data');
+const multer = require("multer");
+const fs = require('fs'); 
 const indexRouter = require('./routes/index');
 
 const app = express();
@@ -25,7 +25,9 @@ app.use('/', indexRouter);
 // Telegram BOT
 const TOKEN = process.env.TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
-app.post('/send', async function(req, res){
+
+// Telegram BOT send Message
+app.post('/sendMessage', async function(req, res){
   const url = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
   const headers ={
     "Content-Type": "application/json",
@@ -35,10 +37,40 @@ app.post('/send', async function(req, res){
     chat_id: CHAT_ID,
     text: req.body.text
   }
-  axios.post(url, data, {headers})
-    .then(response=>{console.log(response.status)})
-    .catch(error=>{console.log(error)}
-  );
+  axios.post(url, data, {headers}).catch(error=>{console.log(error)});
+  res.send();
+});
+
+// set Storage Engine
+const storage = multer.diskStorage({
+  destination: path.join(__dirname,'./public/storage/') ,
+  filename: function(req, file, cb){
+    cb(null, file.originalname);
+  }
+})
+const upload = multer({
+  storage: storage,
+  limits: {
+      fileSize: 1000000
+  },
+}).single('photo');
+
+// Telegram Bot Send photo
+app.post('/sendPhoto', async function(req, res){
+  upload(req, res, async function(err){
+    if(err) {
+      console.log(err)
+      return
+    }
+    let formData = new FormData();
+    formData.append('chat_id', CHAT_ID)
+    formData.append('photo', fs.createReadStream(req.file.path))
+    const url = `https://api.telegram.org/bot${TOKEN}/sendPhoto`;
+    const headers ={
+      ...formData.getHeaders()
+    }
+    return await axios.post(url, formData, {headers}).catch(error=>{console.log(error)});
+  })
   res.send();
 });
 

@@ -14,3 +14,35 @@ a {
   justify-content: center;
   align-items: center;
 }
+
+/* TAB */
+
+ul, li {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.tabs_menu li {
+	display: inline-block;
+}
+
+.tabs_menu li a {
+	display: inline-block;
+	color: #fff;
+	background: #0074a1;
+	padding: 8px 2em;
+	border-radius: 6px;
+}
+
+.tabs_menu li a:hover, .tabs_menu .active a {
+  background: #00B7FF;
+  text-decoration: none;
+}
+
+.tabs_container {
+  width: 400px;
+  height: 220px;
+	margin-top: 1em;
+	padding: 10px;
+}
